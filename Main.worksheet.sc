@@ -38,3 +38,13 @@ iterator4.scanLeft((Queue.empty[String], Map.empty[String, Int]))((state, word) 
     (rest, if c == 0 then plus - old else plus.updated(old, c))
   else (added, plus)
 ).drop(1).map(_._2).toSeq // toSeq runs the iterator to the end so the worksheet can show every result
+
+
+// length of the longest word in each queue (last 3 words), using iterator3's words
+// scanLeft builds the queues, then map looks at each queue on its own
+myIterator3.scanLeft(Queue.empty[String])((q, word) =>
+  val added = q.enqueue(word)
+  if added.size > 3 then added.dequeue._2 else added
+).drop(1) // skip the empty starting queue, max of nothing would crash
+  .map(q => q.map(_.length).max)
+  .toSeq
