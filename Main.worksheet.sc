@@ -22,3 +22,19 @@ def myIterator3 = Iterator("dog", "cat", "mouse", "house")
 val (sum, count) = myIterator3.foldLeft((0, 0))((acc, word) =>
     val (s, c) = acc
     (s + word.length, c + 1))
+
+
+def myIterator4 = Iterator("a", "b", "a", "c", "c", "d")
+// word frequencies in the last 3 words, updated after every word
+// state = (queue, counts): +1 for the word coming in, -1 for the word falling out
+val iterator4 = myIterator4
+iterator4.scanLeft((Queue.empty[String], Map.empty[String, Int]))((state, word) =>
+  val (q, counts) = state
+  val added = q.enqueue(word)
+  val plus = counts.updated(word, counts.getOrElse(word, 0) + 1)
+  if added.size > 3 then
+    val (old, rest) = added.dequeue // queue tells us which word is oldest
+    val c = plus(old) - 1
+    (rest, if c == 0 then plus - old else plus.updated(old, c))
+  else (added, plus)
+).drop(1).map(_._2).toSeq // toSeq runs the iterator to the end so the worksheet can show every result
